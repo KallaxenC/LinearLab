@@ -3,12 +3,15 @@ from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 from unit_square_animator import UnitSquareTransformation
 from manim import config
-from matrix_video_finder import find_matrix_video_2D
+from matrix_video_finder import find_matrix_video
 import os
 
 app = QApplication()
 
 loader = QUiLoader()
+
+#define the video file type
+file_type = "unit_square"
 
 def get_video_quality():
     selected_quality = window.quality_buttonGroup.checkedButton()
@@ -26,10 +29,6 @@ def get_video_quality():
 
     return video_quality
 
-def search_for_video(quality,a,b,c,d):
-    result = find_matrix_video_2D(quality,a,b,c,d)
-    return result
-
 def visualise():
     a = float(window.a_value.text())
     b = float(window.b_value.text())
@@ -39,20 +38,22 @@ def visualise():
     matrix = [[a, b],
               [c, d]]
 
-    if search_for_video(get_video_quality(),a,b,c,d):
-        os.startfile(search_for_video(get_video_quality(),a,b,c,d))
+    values = f"{str(a)}{str(b)}{str(c)}{str(d)}"
+    video_history = find_matrix_video(file_type,get_video_quality(),values)
+    if video_history != None:
+        os.startfile(video_history)
         return
     
     QMessageBox.information(window, 'Video Generation', 'Visualising the transformation and generating video...')
-    values = f"{str(a)}{str(b)}{str(c)}{str(d)}"
+    
     print(f"Values: {values}")
 
     print("Processing...")
 
     config.preview = True                         
     config.quality = get_video_quality()             
-    print(f"Output file name: matrix_animation_{values}")
-    config.output_file = f"matrix_animation_{values}"   
+    print(f"Output file name: matrix_animation_{values}_{file_type}")
+    config.output_file = f"matrix_animation_{values}_{file_type}"   
 
     scene = UnitSquareTransformation(matrix=matrix)
         

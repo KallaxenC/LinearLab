@@ -3,12 +3,15 @@ from PySide6.QtCore import QFile
 from PySide6.QtUiTools import QUiLoader
 from unit_cube_animator import CubeVertexTransformation
 from manim import config
-from matrix_video_finder import find_matrix_video_3D
+from matrix_video_finder import find_matrix_video
 import os
 
 app = QApplication()
 
 loader = QUiLoader()
+#define the file type
+file_type = "unit_cube"
+
 
 def get_video_quality():
     selected_quality = window.quality_buttonGroup.checkedButton()
@@ -27,10 +30,6 @@ def get_video_quality():
     return video_quality
 
 
-def search_for_video(quality,a,b,c,d,e,f,g,h,i):
-    result = find_matrix_video_3D(quality,a,b,c,d,e,f,g,h,i)
-    return result
-
 def visualise():
     a = float(window.a_value.text())
     b = float(window.b_value.text())
@@ -46,12 +45,14 @@ def visualise():
               [d, e, f],
               [g, h, i]]
 
-    if search_for_video(get_video_quality(),a,b,c,d,e,f,g,h,i):
-        os.startfile(search_for_video(get_video_quality(),a,b,c,d,e,f,g,h,i))
+    values = f"{str(a)}{str(b)}{str(c)}{str(d)}{str(e)}{str(f)}{str(g)}{str(h)}{str(i)}"
+    video_history = find_matrix_video(file_type,get_video_quality(),values)
+    if video_history != None:
+        os.startfile(video_history)
         return
     
     QMessageBox.information(window, 'Video Generation', 'Visualising the transformation and generating video...')
-    values = f"{str(a)}{str(b)}{str(c)}{str(d)}{str(e)}{str(f)}{str(g)}{str(h)}{str(i)}"
+    
     print(f"Values: {values}")
     
 
@@ -60,8 +61,8 @@ def visualise():
     config.preview = True                         
     config.quality = get_video_quality()
     print(get_video_quality())                
-    print(f"Output file name: matrix_animation_{values}")
-    config.output_file = f"matrix_animation_{values}"   
+    print(f"Output file name: matrix_animation_{values}_{file_type}")
+    config.output_file = f"matrix_animation_{values}_{file_type}"   
     
     scene = CubeVertexTransformation(matrix)    
     scene.render()
