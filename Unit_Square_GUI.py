@@ -55,7 +55,11 @@ def visualise():
     print(f"Output file name: matrix_animation_{values}_{file_type}")
     config.output_file = f"matrix_animation_{values}_{file_type}"   
 
-    scene = UnitSquareTransformation(matrix=matrix)
+    if window.inverseMatrix_checkBox.isChecked():
+        show_inverse = 1
+    else:
+        show_inverse = 0
+    scene = UnitSquareTransformation(show_inverse, matrix=matrix)
         
     scene.render()
 

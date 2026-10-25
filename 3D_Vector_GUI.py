@@ -66,7 +66,6 @@ def add_vector():
 
 
 def remove_vector():
-    """Removes the last added vector row from the UI layout."""
     if not vector_rows:
         return 
         
@@ -79,7 +78,6 @@ def remove_vector():
     label.deleteLater()
 
 def get_all_vectors():
-    """Loops through the default row + all dynamic rows to parse user values."""
     all_vectors = []
     
     try:
@@ -88,7 +86,7 @@ def get_all_vectors():
         v1_z = float(window.vector1_z.text() or 0)
         all_vectors.append([v1_x, v1_y, v1_z])
     except AttributeError:
-        print("Warning: Could not read default vector boxes. Ensure names match your UI.")
+        print("UI Vector boxes arent matching the names in the code so fix it bruh")
 
     for label, boxes, layout in vector_rows:
         try:
@@ -125,10 +123,6 @@ def visualise():
     print(f"Vectors to transform: {user_vectors}")
     vector_values = "".join(str(num) for vector in user_vectors for num in vector)
     values = f"{str(a)}{str(b)}{str(c)}{str(d)}{str(e)}{str(f)}{str(g)}{str(h)}{str(i)}{vector_values}"
-    video_history = find_matrix_video(file_type, get_video_quality(), values)
-    if video_history != None:
-        os.startfile(video_history)
-        return
     
     QMessageBox.information(window, 'Video Generation', 'Visualising the transformation and generating video...')
     
@@ -136,18 +130,32 @@ def visualise():
     
 
     print("Processing...")
+    if window.inverseMatrix_checkBox.isChecked():
+        show_inverse = 1
+    else:
+        show_inverse = 0
+     
+
+    if window.coordinates_checkBox.isChecked():
+        scene = ThreeDVectorTransformationWithCoordinates(show_inverse, matrix, user_vectors)
+        print("Showing coords")
+        file_type = "3D_vector_with_coords"
+    else:
+        scene = ThreeDVectorTransformation(show_inverse, matrix, user_vectors)
+        file_type = "3D_vector"    
+    
+
+    video_history = find_matrix_video(file_type, get_video_quality(), values)
+    if video_history != None:
+        os.startfile(video_history)
+        return
 
     config.preview = True                         
     config.quality = get_video_quality()
     print(get_video_quality())                
     print(f"Output file name: matrix_animation_{values}_{file_type}")
-    config.output_file = f"matrix_animation_{values}_{file_type}"   
+    config.output_file = f"matrix_animation_{values}_{file_type}"
 
-    if window.coordinates_checkBox.isChecked():
-        scene = ThreeDVectorTransformationWithCoordinates(matrix, user_vectors)
-        print("Showing coords")
-    else:
-        scene = ThreeDVectorTransformation(matrix, user_vectors)    
     scene.render()
 
 
