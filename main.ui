@@ -6,64 +6,102 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>568</width>
-    <height>430</height>
+    <width>754</width>
+    <height>344</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Segoe UI</family>
+    <pointsize>14</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="unitSquare_Button">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>60</y>
-      <width>181</width>
-      <height>61</height>
+      <x>50</x>
+      <y>80</y>
+      <width>331</width>
+      <height>81</height>
      </rect>
     </property>
     <property name="text">
      <string>Unit Square Transformations</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="unitCube_Button">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>130</y>
-      <width>181</width>
-      <height>61</height>
+      <x>50</x>
+      <y>170</y>
+      <width>331</width>
+      <height>81</height>
      </rect>
     </property>
     <property name="text">
      <string>Unit Cube Transformations</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="threeDVector_Button">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>130</y>
-      <width>181</width>
-      <height>61</height>
+      <x>390</x>
+      <y>170</y>
+      <width>311</width>
+      <height>81</height>
      </rect>
     </property>
     <property name="text">
      <string>3D Vector / Point Transformations</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_4">
+   <widget class="QPushButton" name="twoDVector_Button">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>60</y>
-      <width>181</width>
-      <height>61</height>
+      <x>390</x>
+      <y>80</y>
+      <width>311</width>
+      <height>81</height>
      </rect>
     </property>
     <property name="text">
      <string>2D Vector / Point Transformations</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>40</y>
+      <width>651</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>Select The Transformation Type You Want To Visualise:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>280</y>
+      <width>281</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LinearLab V0.6</string>
     </property>
    </widget>
   </widget>
@@ -72,8 +110,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>568</width>
-     <height>21</height>
+     <width>754</width>
+     <height>31</height>
     </rect>
    </property>
   </widget>

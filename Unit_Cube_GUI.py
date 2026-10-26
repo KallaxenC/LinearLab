@@ -4,6 +4,7 @@ from PySide6.QtUiTools import QUiLoader
 from unit_cube_animator import CubeVertexTransformation
 from manim import config
 from matrix_video_finder import find_matrix_video
+from maths_syntaxer import interpretInput
 import os
 
 app = QApplication()
@@ -31,15 +32,19 @@ def get_video_quality():
 
 
 def visualise():
-    a = float(window.a_value.text())
-    b = float(window.b_value.text())
-    c = float(window.c_value.text())
-    d = float(window.d_value.text())
-    e = float(window.e_value.text())
-    f = float(window.f_value.text())
-    g = float(window.g_value.text())
-    h = float(window.h_value.text())
-    i = float(window.i_value.text())
+    try:
+        a = float(interpretInput(window.a_value.text()))
+        b = float(interpretInput(window.b_value.text()))
+        c = float(interpretInput(window.c_value.text()))
+        d = float(interpretInput(window.d_value.text()))
+        e = float(interpretInput(window.e_value.text()))
+        f = float(interpretInput(window.f_value.text()))
+        g = float(interpretInput(window.g_value.text()))
+        h = float(interpretInput(window.h_value.text()))
+        i = float(interpretInput(window.i_value.text()))
+    except:
+        QMessageBox.information(window, 'Input Error', 'An unknown function or invalid values have been inputted. Please check or change your inputs and try again.')
+        return
 
     matrix = [[a, b, c],
               [d, e, f],

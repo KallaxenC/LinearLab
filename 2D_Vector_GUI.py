@@ -5,6 +5,7 @@ from TwoD_vector_animator import TwoDVectorTransformation, TwoDVectorTransformat
 from manim import config
 from matrix_video_finder import find_matrix_video
 import os
+from maths_syntaxer import interpretInput
 
 app = QApplication()
 
@@ -78,8 +79,8 @@ def get_all_vectors():
     all_vectors = []
     
     try:
-        v1_x = float(window.vector1_x.text() or 0)
-        v1_y = float(window.vector1_y.text() or 0)
+        v1_x = float(interpretInput(window.vector1_x.text())) or 0
+        v1_y = float(interpretInput(window.vector1_y.text())) or 0
         #v1_z = float(window.vector1_z.text() or 0)
         all_vectors.append([v1_x, v1_y])
     except AttributeError:
@@ -87,8 +88,8 @@ def get_all_vectors():
 
     for label, boxes, layout in vector_rows:
         try:
-            x = float(boxes[0].text() or 0)
-            y = float(boxes[1].text() or 0)
+            x = float(interpretInput(boxes[0].text())) or 0
+            y = float(interpretInput(boxes[1].text())) or 0
             #z = float(boxes[2].text() or 0)
             all_vectors.append([x, y])
         except ValueError:
@@ -99,19 +100,20 @@ def get_all_vectors():
 
 def visualise():
     try:
-        a = float(window.a_value.text())
-        b = float(window.b_value.text())
-        c = float(window.c_value.text())
-        d = float(window.d_value.text())
+        a = float(interpretInput(window.a_value.text()))
+        b = float(interpretInput(window.b_value.text()))
+        c = float(interpretInput(window.c_value.text()))
+        d = float(interpretInput(window.d_value.text()))
+        
 
-    except ValueError:
-        QMessageBox.information(window, 'Alert', 'One or more boxes did not contain a number.')
+    except:
+        QMessageBox.information(window, 'Input Error', 'An unknown function or invalid values have been inputted. Please check or change your inputs and try again.')
         return
-
+    
+    user_vectors = get_all_vectors()
     matrix = [[a, b],
               [c, d]]
               
-    user_vectors = get_all_vectors()
     print(f"Vectors to transform: {user_vectors}")
     vector_values = "".join(str(num) for vector in user_vectors for num in vector)
     values = f"{str(a)}{str(b)}{str(c)}{str(d)}{vector_values}"
@@ -127,23 +129,27 @@ def visualise():
     else:
         show_inverse = 0
     if window.coordinates_checkBox.isChecked():
-        scene = TwoDVectorTransformationWithCoordinates(show_inverse, matrix, user_vectors)
         print("Showing coords")
         file_type = "2D_vector_with_coords"
     else:
-        scene = TwoDVectorTransformation(show_inverse, matrix, user_vectors)
         file_type = "2D_vector"
 
-    video_history = find_matrix_video(file_type, get_video_quality(), values)
+    video_quality = get_video_quality()
+    video_history = find_matrix_video(file_type, video_quality, values)
     if video_history != None:
         os.startfile(video_history)
         return
 
-    config.preview = True                         
-    config.quality = get_video_quality()
-    print(get_video_quality())                
+    config.preview = True
+    config.quality = video_quality
+    print(video_quality)
     print(f"Output file name: matrix_animation_{values}_{file_type}")
-    config.output_file = f"matrix_animation_{values}_{file_type}"   
+    config.output_file = f"matrix_animation_{values}_{file_type}"
+
+    if window.coordinates_checkBox.isChecked():
+        scene = TwoDVectorTransformationWithCoordinates(show_inverse, matrix, user_vectors)
+    else:
+        scene = TwoDVectorTransformation(show_inverse, matrix, user_vectors)
 
     scene.render()
 

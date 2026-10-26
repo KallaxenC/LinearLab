@@ -5,6 +5,7 @@ from unit_square_animator import UnitSquareTransformation
 from manim import config
 from matrix_video_finder import find_matrix_video
 import os
+from maths_syntaxer import interpretInput
 
 app = QApplication()
 
@@ -30,11 +31,15 @@ def get_video_quality():
     return video_quality
 
 def visualise():
-    a = float(window.a_value.text())
-    b = float(window.b_value.text())
-    c = float(window.c_value.text())
-    d = float(window.d_value.text())
-    
+    try:
+        a = float(interpretInput(window.a_value.text()))
+        b = float(interpretInput(window.b_value.text()))
+        c = float(interpretInput(window.c_value.text()))
+        d = float(interpretInput(window.d_value.text()))
+    except:
+        QMessageBox.information(window, 'Input Error', 'An unknown function or invalid values have been inputted. Please check or change your inputs and try again.')
+        return
+
     matrix = [[a, b],
               [c, d]]
 
