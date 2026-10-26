@@ -1,0 +1,17 @@
+TO DO LIST:
+
+#1 Update Unit Cube animator to support toggleable coordinates and support inverse matrices
+
+#2 Add support for surds and fractions
+
+#3 Add a video output displayer to all the UI's
+
+#4 Build a consecutive transformation viewer of the unit square
+
+#5 Build software into a .exe file
+
+#6 Make the project public
+
+#7 Add example videos to the GitHub page
+
+#8 Discover and integrate eigenvalue visualisation
