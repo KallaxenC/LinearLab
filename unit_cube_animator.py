@@ -1,11 +1,14 @@
 from manim import *
-import numpy as np
+from matrix_multiplier import applyMatrixtoVector
+from Gauss_Jordan_Inverter import InverseMatrix
 
 class CubeVertexTransformation(ThreeDScene):
-    def __init__(self, matrix, **kwargs):
+    def __init__(self, matrix, show_inverse=False, show_coordinates=False, **kwargs):
         super().__init__(**kwargs)
 
         self.matrix = matrix
+        self.show_inverse = show_inverse
+        self.show_coordinates = show_coordinates
 
     def construct(self):
         
@@ -51,6 +54,12 @@ class CubeVertexTransformation(ThreeDScene):
         
        #Track each of the vertices of the cube
         tracking_dots = VGroup()
+        original_labels = VGroup()
+        transformed_labels = VGroup()
+        transformed_vertices = [
+            applyMatrixtoVector(self.matrix, coord) for coord in cube_vertices
+        ]
+
         for index, coord in enumerate(cube_vertices):
             dot = Dot3D(
                 point=coord, 
@@ -59,11 +68,36 @@ class CubeVertexTransformation(ThreeDScene):
             )
             tracking_dots.add(dot)
 
+            if self.show_coordinates:
+                original_label = MathTex(
+                    f"({coord[0]}, {coord[1]}, {coord[2]})",
+                    font_size=16,
+                    color=WHITE,
+                )
+                original_label.next_to(coord, UP, buff=0.1)
+                original_labels.add(original_label)
+
+                transformed_coord = transformed_vertices[index]
+                transformed_label = MathTex(
+                    f"({round(transformed_coord[0], 1)}, "
+                    f"{round(transformed_coord[1], 1)}, "
+                    f"{round(transformed_coord[2], 1)})",
+                    font_size=20,
+                    color=WHITE,
+                )
+                transformed_label.next_to(transformed_coord, UP, buff=0.1)
+                transformed_labels.add(transformed_label)
+
 
         self.add(bg_axes, hologram_cube, cube, tracking_dots)
         self.wait(1)
 
         matrix = self.matrix
+        inverse_matrix = None
+        if self.show_inverse:
+            inverse_matrix = InverseMatrix([
+                [float(value) for value in row] for row in matrix
+            ])
 
         self.move_camera(
             phi=60 * DEGREES, 
@@ -75,20 +109,22 @@ class CubeVertexTransformation(ThreeDScene):
                 tracking_dots.animate(rate_func=linear).apply_matrix(matrix)
             ]
         )
+
+        if self.show_coordinates:
+            self.add_fixed_orientation_mobjects(
+                *original_labels,
+                *transformed_labels,
+            )
+            self.play(FadeIn(original_labels, transformed_labels), run_time=1)
+
+        if inverse_matrix != 0 and inverse_matrix is not None:
+            self.wait(2)
+            if self.show_coordinates:
+                self.play(FadeOut(transformed_labels), run_time=1)
+            self.play(
+                cube.animate(rate_func=linear).apply_matrix(inverse_matrix),
+                tracking_dots.animate(rate_func=linear).apply_matrix(inverse_matrix),
+                run_time=4,
+            )
         
         self.wait(2)
-
-'''
-output_name = "matrix_animation_001"
-
-# Set up global Manim configurations programmatically before instantiation
-config.preview = True                         # '-p' auto-preview flag
-config.quality = "medium_quality"                # '-ql' speed optimization flag
-config.output_file = "matrix_animation_001"   # '-o' file destination name
-
-# Instantiate your imported scene object object-orientedly
-scene = CubeVertexTransformation()
-    
-# Trigger the render pipeline natively
-scene.render()
-'''

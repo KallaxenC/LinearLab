@@ -51,7 +51,16 @@ def visualise():
               [g, h, i]]
 
     values = f"{str(a)}{str(b)}{str(c)}{str(d)}{str(e)}{str(f)}{str(g)}{str(h)}{str(i)}"
-    video_history = find_matrix_video(file_type,get_video_quality(),values)
+    show_inverse = window.inverseMatrix_checkBox.isChecked()
+    show_coordinates = window.coordinates_checkBox.isChecked()
+    file_type = "unit_cube"
+    if show_coordinates:
+        file_type = "unit_cube_with_coords"
+    if show_inverse:
+        file_type += "_inverse"
+
+    video_quality = get_video_quality()
+    video_history = find_matrix_video(file_type, video_quality, values)
     if video_history != None:
         os.startfile(video_history)
         return
@@ -64,12 +73,16 @@ def visualise():
     print("Processing...")
 
     config.preview = True                         
-    config.quality = get_video_quality()
-    print(get_video_quality())                
+    config.quality = video_quality
+    print(video_quality)                
     print(f"Output file name: matrix_animation_{values}_{file_type}")
     config.output_file = f"matrix_animation_{values}_{file_type}"   
     
-    scene = CubeVertexTransformation(matrix)    
+    scene = CubeVertexTransformation(
+        matrix,
+        show_inverse=show_inverse,
+        show_coordinates=show_coordinates,
+    )
     scene.render()
 
 
@@ -84,4 +97,3 @@ window.visualiseButton.clicked.connect(visualise)
 window.show()
 
 app.exec()
-
