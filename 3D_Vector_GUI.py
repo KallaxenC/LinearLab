@@ -1,11 +1,72 @@
-from PySide6.QtWidgets import QApplication, QMessageBox, QHBoxLayout, QLineEdit, QLabel
-from PySide6.QtCore import QFile
+from PySide6.QtWidgets import (
+    QApplication,
+    QMessageBox,
+    QHBoxLayout,
+    QLineEdit,
+    QLabel,
+    QVBoxLayout,
+    QSizePolicy,
+    QProgressDialog,
+)
+from PySide6.QtCore import QFile, Qt, QUrl, QThread, Signal
 from PySide6.QtUiTools import QUiLoader
+from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
+from PySide6.QtMultimediaWidgets import QVideoWidget
 from ThreeD_vector_animator import ThreeDVectorTransformation, ThreeDVectorTransformationWithCoordinates
 from manim import config
 from matrix_video_finder import find_matrix_video
 from maths_syntaxer import interpretInput
 import os
+
+
+class VideoRenderer(QThread):
+    render_finished = Signal(str, bool)
+    error = Signal(str)
+
+    def __init__(
+        self,
+        show_inverse,
+        matrix,
+        user_vectors,
+        file_type,
+        video_quality,
+        values,
+        open_video_separately,
+    ):
+        super().__init__()
+        self.show_inverse = show_inverse
+        self.matrix = matrix
+        self.user_vectors = user_vectors
+        self.file_type = file_type
+        self.video_quality = video_quality
+        self.values = values
+        self.open_video_separately = open_video_separately
+
+    def run(self):
+        try:
+            config.preview = False
+            config.quality = self.video_quality
+            config.output_file = f"matrix_animation_{self.values}_{self.file_type}"
+
+            if self.file_type == "3D_vector_with_coords":
+                scene = ThreeDVectorTransformationWithCoordinates(
+                    self.show_inverse, self.matrix, self.user_vectors
+                )
+            else:
+                scene = ThreeDVectorTransformation(
+                    self.show_inverse, self.matrix, self.user_vectors
+                )
+            scene.render()
+
+            video_path = find_matrix_video(
+                self.file_type, self.video_quality, self.values
+            )
+            self.render_finished.emit(
+                video_path or "", self.open_video_separately
+            )
+        except Exception as error:
+            self.error.emit(str(error))
+
 
 app = QApplication()
 
@@ -16,6 +77,19 @@ file_type = "3D_vector"
 # --- Dynamic Row Tracker ---
 # This list will store tuples: (label_widget, [box_x, box_y, box_z])
 vector_rows = []
+
+
+def play_video(video_path):
+    window.media_player.setSource(QUrl.fromLocalFile(video_path))
+    window.media_player.play()
+
+
+def close_progress_dialog():
+    dialog = getattr(window, "progress_dialog", None)
+    if dialog is not None:
+        dialog.close()
+        dialog.deleteLater()
+        window.progress_dialog = None
 
 
 def get_video_quality():
@@ -127,43 +201,71 @@ def visualise():
     vector_values = "".join(str(num) for vector in user_vectors for num in vector)
     values = f"{str(a)}{str(b)}{str(c)}{str(d)}{str(e)}{str(f)}{str(g)}{str(h)}{str(i)}{vector_values}"
     
-    QMessageBox.information(window, 'Video Generation', 'Visualising the transformation and generating video...')
-    
-    print(f"Values: {values}")
-    
-
-    print("Processing...")
     if window.inverseMatrix_checkBox.isChecked():
         show_inverse = 1
     else:
         show_inverse = 0
-     
 
     if window.coordinates_checkBox.isChecked():
-        print("Showing coords")
         file_type = "3D_vector_with_coords"
     else:
         file_type = "3D_vector"
-    
 
     video_quality = get_video_quality()
     video_history = find_matrix_video(file_type, video_quality, values)
     if video_history != None:
-        os.startfile(video_history)
+        if window.seperateVideo_checkBox.isChecked():
+            os.startfile(video_history)
+        else:
+            play_video(video_history)
         return
 
-    config.preview = True
-    config.quality = video_quality
-    print(video_quality)
-    print(f"Output file name: matrix_animation_{values}_{file_type}")
-    config.output_file = f"matrix_animation_{values}_{file_type}"
+    open_video_separately = window.seperateVideo_checkBox.isChecked()
 
-    if window.coordinates_checkBox.isChecked():
-        scene = ThreeDVectorTransformationWithCoordinates(show_inverse, matrix, user_vectors)
+    window.progress_dialog = QProgressDialog(
+        "Generating Matrix Transformation Video...", None, 0, 0, window
+    )
+    window.progress_dialog.setWindowTitle("Processing Request")
+    window.progress_dialog.setWindowModality(Qt.WindowModality.WindowModal)
+    window.progress_dialog.show()
+
+    window.render_thread = VideoRenderer(
+        show_inverse,
+        matrix,
+        user_vectors,
+        file_type,
+        video_quality,
+        values,
+        open_video_separately,
+    )
+    window.render_thread.render_finished.connect(on_render_finished)
+    window.render_thread.error.connect(on_render_error)
+    window.render_thread.start()
+
+
+def on_render_finished(video_path, open_video_separately):
+    close_progress_dialog()
+
+    if video_path and os.path.exists(video_path):
+        if open_video_separately:
+            os.startfile(video_path)
+        else:
+            play_video(video_path)
     else:
-        scene = ThreeDVectorTransformation(show_inverse, matrix, user_vectors)
+        QMessageBox.warning(
+            window,
+            "File Error",
+            "The video was generated successfully but file explorer could not find the video.",
+        )
 
-    scene.render()
+
+def on_render_error(error_message):
+    close_progress_dialog()
+    QMessageBox.critical(
+        window,
+        "Rendering Error",
+        f"An error occurred whilst generating the video:\n{error_message}",
+    )
 
 
 file = QFile('3D_vector.ui')
@@ -171,6 +273,22 @@ file.open(QFile.ReadOnly)
 window = loader.load(file)
 file.close()
 window.setWindowTitle('Matrix Visualiser')
+
+audio_output = QAudioOutput(window)
+window.media_player = QMediaPlayer(window)
+window.media_player.setAudioOutput(audio_output)
+window.video_widget = QVideoWidget(window.video_container)
+window.video_widget.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent)
+window.video_widget.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground)
+window.media_player.setVideoOutput(window.video_widget)
+window.media_player.setLoops(1)
+
+window.video_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+video_layout = QVBoxLayout(window.video_container)
+video_layout.setContentsMargins(0, 0, 0, 0)
+video_layout.setSpacing(0)
+video_layout.addWidget(window.video_widget)
+window.settings_frame.setMaximumWidth(400)
 
 # --- Button Connections ---
 window.visualiseButton.clicked.connect(visualise)
