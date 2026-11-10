@@ -6,114 +6,77 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>754</width>
-    <height>344</height>
+    <width>1197</width>
+    <height>787</height>
    </rect>
   </property>
   <property name="font">
    <font>
     <family>Segoe UI</family>
-    <pointsize>14</pointsize>
+    <pointsize>10</pointsize>
    </font>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="unitSquare_Button">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>80</y>
-      <width>331</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Unit Square Transformations</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="unitCube_Button">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>170</y>
-      <width>331</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Unit Cube Transformations</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="threeDVector_Button">
-    <property name="geometry">
-     <rect>
-      <x>390</x>
-      <y>170</y>
-      <width>311</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>3D Vector / Point Transformations</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="twoDVector_Button">
-    <property name="geometry">
-     <rect>
-      <x>390</x>
-      <y>80</y>
-      <width>311</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>2D Vector / Point Transformations</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>40</y>
-      <width>651</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="autoFillBackground">
-     <bool>false</bool>
-    </property>
-    <property name="text">
-     <string>Select The Transformation Type You Want To Visualise:</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>280</y>
-      <width>281</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>LinearLab V0.6</string>
-    </property>
-   </widget>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Select Matrix Visualisation Tool:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <layout class="QGridLayout" name="gridLayout_2"/>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>LinearLab V0.7</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="margin">
+       <number>-2</number>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QComboBox" name="modeComboBox"/>
+    </item>
+    <item row="3" column="0">
+     <widget class="QStackedWidget" name="mainStackedWidget">
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>754</width>
-     <height>31</height>
+     <width>1197</width>
+     <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuHow_to_Start">
+    <property name="title">
+     <string>How to Start?</string>
+    </property>
+   </widget>
+   <addaction name="menuHelp"/>
+   <addaction name="menuHow_to_Start"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

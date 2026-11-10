@@ -13,6 +13,7 @@ from unit_square_animator import UnitSquareTransformation
 from manim import config
 from matrix_video_finder import find_matrix_video
 import os
+import sys
 from maths_syntaxer import interpretInput
 
 
@@ -56,29 +57,25 @@ class VideoRenderer(QThread):
             self.error.emit(str(error))
 
 
-app = QApplication()
-
-loader = QUiLoader()
-
 #define the video file type
 file_type = "unit_square"
 
 
 def play_video(video_path):
-    window.media_player.setSource(QUrl.fromLocalFile(video_path))
-    window.media_player.play()
+    sub_window.media_player.setSource(QUrl.fromLocalFile(video_path))
+    sub_window.media_player.play()
 
 
 def close_progress_dialog():
-    dialog = getattr(window, "progress_dialog", None)
+    dialog = getattr(sub_window, "progress_dialog", None)
     if dialog is not None:
         dialog.close()
         dialog.deleteLater()
-        window.progress_dialog = None
+        sub_window.progress_dialog = None
 
 
 def get_video_quality():
-    selected_quality = window.quality_buttonGroup.checkedButton()
+    selected_quality = sub_window.quality_buttonGroup.checkedButton()
 
     if not selected_quality:
         video_quality = "medium_quality"
@@ -95,12 +92,12 @@ def get_video_quality():
 
 def visualise():
     try:
-        a = float(interpretInput(window.a_value.text()))
-        b = float(interpretInput(window.b_value.text()))
-        c = float(interpretInput(window.c_value.text()))
-        d = float(interpretInput(window.d_value.text()))
+        a = float(interpretInput(sub_window.a_value.text()))
+        b = float(interpretInput(sub_window.b_value.text()))
+        c = float(interpretInput(sub_window.c_value.text()))
+        d = float(interpretInput(sub_window.d_value.text()))
     except:
-        QMessageBox.information(window, 'Input Error', 'An unknown function or invalid values have been inputted. Please check or change your inputs and try again.')
+        QMessageBox.information(sub_window, 'Input Error', 'An unknown function or invalid values have been inputted. Please check or change your inputs and try again.')
         return
 
     matrix = [[a, b],
@@ -110,23 +107,23 @@ def visualise():
     video_quality = get_video_quality()
     video_history = find_matrix_video(file_type, video_quality, values)
     if video_history != None:
-        if window.seperateVideo_checkBox.isChecked():
+        if sub_window.seperateVideo_checkBox.isChecked():
             os.startfile(video_history)
         else:
             play_video(video_history)
         return
 
-    show_inverse = int(window.inverseMatrix_checkBox.isChecked())
-    open_video_separately = window.seperateVideo_checkBox.isChecked()
+    show_inverse = int(sub_window.inverseMatrix_checkBox.isChecked())
+    open_video_separately = sub_window.seperateVideo_checkBox.isChecked()
 
-    window.progress_dialog = QProgressDialog(
-        "Generating Matrix Transformation Video...", None, 0, 0, window
+    sub_window.progress_dialog = QProgressDialog(
+        "Generating Matrix Transformation Video...", None, 0, 0, sub_window
     )
-    window.progress_dialog.setWindowTitle("Processing Request")
-    window.progress_dialog.setWindowModality(Qt.WindowModality.WindowModal)
-    window.progress_dialog.show()
+    sub_window.progress_dialog.setsub_windowTitle("Processing Request")
+    sub_window.progress_dialog.setsub_windowModality(Qt.sub_windowModality.sub_windowModal)
+    sub_window.progress_dialog.show()
 
-    window.render_thread = VideoRenderer(
+    sub_window.render_thread = VideoRenderer(
         show_inverse,
         matrix,
         file_type,
@@ -134,9 +131,9 @@ def visualise():
         values,
         open_video_separately,
     )
-    window.render_thread.render_finished.connect(on_render_finished)
-    window.render_thread.error.connect(on_render_error)
-    window.render_thread.start()
+    sub_window.render_thread.render_finished.connect(on_render_finished)
+    sub_window.render_thread.error.connect(on_render_error)
+    sub_window.render_thread.start()
 
 
 def on_render_finished(video_path, open_video_separately):
@@ -149,7 +146,7 @@ def on_render_finished(video_path, open_video_separately):
             play_video(video_path)
     else:
         QMessageBox.warning(
-            window,
+            sub_window,
             "File Error",
             "The video was generated successfully but file explorer could not find the video.",
         )
@@ -158,36 +155,42 @@ def on_render_finished(video_path, open_video_separately):
 def on_render_error(error_message):
     close_progress_dialog()
     QMessageBox.critical(
-        window,
+        sub_window,
         "Rendering Error",
         f"An error occurred whilst generating the video:\n{error_message}",
     )
 
-
+loader = QUiLoader()
 file = QFile('unit_square.ui')
 file.open(QFile.ReadOnly)
-window = loader.load(file)
+sub_window = loader.load(file)
 file.close()
-window.setWindowTitle('Matrix Visualiser')
+sub_window.setWindowTitle("Matrix Visualiser")
 
-audio_output = QAudioOutput(window)
-window.media_player = QMediaPlayer(window)
-window.media_player.setAudioOutput(audio_output)
-window.video_widget = QVideoWidget(window.video_container)
-window.video_widget.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent)
-window.video_widget.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground)
-window.media_player.setVideoOutput(window.video_widget)
-window.media_player.setLoops(1)
 
-window.video_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-video_layout = QVBoxLayout(window.video_container)
+audio_output = QAudioOutput(sub_window)
+sub_window.media_player = QMediaPlayer(sub_window)
+sub_window.media_player.setAudioOutput(audio_output)
+sub_window.video_widget = QVideoWidget(sub_window.video_container)
+sub_window.video_widget.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent)
+sub_window.video_widget.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground)
+sub_window.media_player.setVideoOutput(sub_window.video_widget)
+sub_window.media_player.setLoops(1)
+
+sub_window.video_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+video_layout = QVBoxLayout(sub_window.video_container)
 video_layout.setContentsMargins(0, 0, 0, 0)
 video_layout.setSpacing(0)
-video_layout.addWidget(window.video_widget)
-window.settings_frame.setMaximumWidth(400)
+video_layout.addWidget(sub_window.video_widget)
+sub_window.settings_frame.setMaximumWidth(400)
 
-window.visualiseButton.clicked.connect(visualise)
+sub_window.visualiseButton.clicked.connect(visualise)
 
-window.show()
+app = QApplication.instance()
 
-app.exec()
+if not app:
+    app = QApplication(sys.argv)
+    sub_window.setWindowTitle("Matrix Visualiser")
+    sub_window.show()
+
+    sys.exit(app.exec())

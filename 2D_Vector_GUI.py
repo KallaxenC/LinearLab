@@ -7,11 +7,12 @@ from TwoD_vector_animator import TwoDVectorTransformation, TwoDVectorTransformat
 from manim import config
 from matrix_video_finder import find_matrix_video
 import os
+import sys
 from maths_syntaxer import interpretInput
 
 #Classes go below here
 
-#I seperate the rendering process into a seperate 'Thread' to allow the window to remain responsive whilst all the rendering stuff happens
+#I seperate the rendering process into a seperate 'Thread' to allow the sub_window to remain responsive whilst all the rendering stuff happens
 class VideoRenderer(QThread):
     #Allows the renderer to report errors because you need that obviously
     render_finished = Signal(str, bool)
@@ -62,11 +63,11 @@ class VideoRenderer(QThread):
 def play_video(video_path):
     # Converts "C:/path/to/video.mp4" into a local QUrl format
     local_url = QUrl.fromLocalFile(video_path)
-    window.media_player.setSource(local_url)
-    window.media_player.play()
+    sub_window.media_player.setSource(local_url)
+    sub_window.media_player.play()
 
 def get_video_quality():
-    selected_quality = window.quality_buttonGroup.checkedButton()
+    selected_quality = sub_window.quality_buttonGroup.checkedButton()
 
     if not selected_quality:
         video_quality = "medium_quality"
@@ -83,20 +84,13 @@ def get_video_quality():
 
 
 def close_progress_dialog():
-    dialog = getattr(window, "progress_dialog", None)
+    dialog = getattr(sub_window, "progress_dialog", None)
     if dialog is not None:
         dialog.close()
         dialog.deleteLater()
-        window.progress_dialog = None
-
-
-app = QApplication()
-
-loader = QUiLoader()
+        sub_window.progress_dialog = None
 
 vector_rows = []
-
-
 def add_vector():
 
     vector_count = len(vector_rows) + 2 
@@ -123,7 +117,7 @@ def add_vector():
     close_bracket = QLabel(" ) ")
     row_layout.addWidget(close_bracket)
         
-    target_layout = window.scrollArea_verticalLayout
+    target_layout = sub_window.scrollArea_verticalLayout
     target_layout.addWidget(new_label)
     target_layout.addLayout(row_layout)
     
@@ -146,9 +140,9 @@ def get_all_vectors():
     all_vectors = []
     
     try:
-        v1_x = float(interpretInput(window.vector1_x.text())) or 0
-        v1_y = float(interpretInput(window.vector1_y.text())) or 0
-        #v1_z = float(window.vector1_z.text() or 0)
+        v1_x = float(interpretInput(sub_window.vector1_x.text())) or 0
+        v1_y = float(interpretInput(sub_window.vector1_y.text())) or 0
+        #v1_z = float(sub_window.vector1_z.text() or 0)
         all_vectors.append([v1_x, v1_y])
     except AttributeError:
         print("Warning: Could not read default vector boxes. Ensure names match your UI.")
@@ -167,14 +161,14 @@ def get_all_vectors():
 
 def visualise():
     try:
-        a = float(interpretInput(window.a_value.text()))
-        b = float(interpretInput(window.b_value.text()))
-        c = float(interpretInput(window.c_value.text()))
-        d = float(interpretInput(window.d_value.text()))
+        a = float(interpretInput(sub_window.a_value.text()))
+        b = float(interpretInput(sub_window.b_value.text()))
+        c = float(interpretInput(sub_window.c_value.text()))
+        d = float(interpretInput(sub_window.d_value.text()))
         
 
     except:
-        QMessageBox.information(window, 'Input Error', 'An unknown function or invalid values have been inputted. Please check or change your inputs and try again.')
+        QMessageBox.information(sub_window, 'Input Error', 'An unknown function or invalid values have been inputted. Please check or change your inputs and try again.')
         return
     
     user_vectors = get_all_vectors()
@@ -189,17 +183,17 @@ def visualise():
     
 
     #print("Processing...")
-    if window.inverseMatrix_checkBox.isChecked():
+    if sub_window.inverseMatrix_checkBox.isChecked():
         show_inverse = 1
     else:
         show_inverse = 0
-    if window.coordinates_checkBox.isChecked():
+    if sub_window.coordinates_checkBox.isChecked():
         #print("Showing coords")
         file_type = "2D_vector_with_coords"
     else:
         file_type = "2D_vector"
 
-    if window.seperateVideo_checkBox.isChecked():
+    if sub_window.seperateVideo_checkBox.isChecked():
         open_video_seperately = True
     else:
         open_video_seperately = False
@@ -213,20 +207,20 @@ def visualise():
             os.startfile(video_history)
         return
 
-    window.progress_dialog = QProgressDialog("Generating Matrix Transformation Video...", None, 0, 0, window)
-    window.progress_dialog.setWindowTitle("Processing Request")
-    window.progress_dialog.setWindowModality(Qt.WindowModality.WindowModal)
+    sub_window.progress_dialog = QProgressDialog("Generating Matrix Transformation Video...", None, 0, 0, sub_window)
+    sub_window.progress_dialog.setsub_windowTitle("Processing Request")
+    sub_window.progress_dialog.setsub_windowModality(Qt.sub_windowModality.sub_windowModal)
     #progress_dialog.setCancelButton(None)
-    window.progress_dialog.show()
+    sub_window.progress_dialog.show()
 
     global render_thread
 
-    window.render_thread = VideoRenderer(show_inverse, matrix, user_vectors, file_type, video_quality, values, open_video_seperately)
+    sub_window.render_thread = VideoRenderer(show_inverse, matrix, user_vectors, file_type, video_quality, values, open_video_seperately)
 
-    window.render_thread.render_finished.connect(on_render_finished)
-    window.render_thread.error.connect(on_render_error)
+    sub_window.render_thread.render_finished.connect(on_render_finished)
+    sub_window.render_thread.error.connect(on_render_error)
 
-    window.render_thread.start()
+    sub_window.render_thread.start()
 
     
 def on_render_finished(video_path, open_video_seperately):
@@ -239,58 +233,67 @@ def on_render_finished(video_path, open_video_seperately):
         else:
             os.startfile(video_path)
     else:
-        QMessageBox.warning(window, "File Error", "The video was generated successfully but file explorer could not find the video. ")
+        QMessageBox.warning(sub_window, "File Error", "The video was generated successfully but file explorer could not find the video. ")
 
 def on_render_error(error_msg):
     close_progress_dialog()
-    QMessageBox.critical(window, "Rendering Error", f"An error occurred whilst generating the video:\n{error_msg}")
+    QMessageBox.critical(sub_window, "Rendering Error", f"An error occurred whilst generating the video:\n{error_msg}")
 
+
+
+loader = QUiLoader()
 file = QFile('2D_vector.ui')
 file.open(QFile.ReadOnly)
-window = loader.load(file)
+sub_window = loader.load(file)
 file.close()
+sub_window.setWindowTitle('Matrix Visualiser')
 
 audio_output = QAudioOutput()
-window.media_player = QMediaPlayer()
-window.media_player.setAudioOutput(audio_output)
-window.video_widget = QVideoWidget()
+sub_window.media_player = QMediaPlayer()
+sub_window.media_player.setAudioOutput(audio_output)
+sub_window.video_widget = QVideoWidget()
 
 #I make sure that the video widget runs the video using a GPU rather than laggy software rendering
 
-window.video_widget.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent)
-window.video_widget.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground)
+sub_window.video_widget.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent)
+sub_window.video_widget.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground)
 
-window.media_player.setVideoOutput(window.video_widget)
-window.media_player.setLoops(1)
+sub_window.media_player.setVideoOutput(sub_window.video_widget)
+sub_window.media_player.setLoops(1)
 
-window.video_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-window.video_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+sub_window.video_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+sub_window.video_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-video_layout = QVBoxLayout(window.video_container)
+video_layout = QVBoxLayout(sub_window.video_container)
 
 video_layout.setContentsMargins(0,0,0,0)
 video_layout.setSpacing(0)
 
-video_layout.addWidget(window.video_widget)
-#window.video_container.layout().addWidget(window.video_widget)
-#window.video_container.setMinimumWidth(0) 
+video_layout.addWidget(sub_window.video_widget)
+#sub_window.video_container.layout().addWidget(sub_window.video_widget)
+#sub_window.video_container.setMinimumWidth(0) 
 
 
-window.settings_frame.setSizePolicy(
-    window.settings_frame.sizePolicy().horizontalPolicy(),
-    window.settings_frame.sizePolicy().verticalPolicy()
+sub_window.settings_frame.setSizePolicy(
+    sub_window.settings_frame.sizePolicy().horizontalPolicy(),
+    sub_window.settings_frame.sizePolicy().verticalPolicy()
 )
-window.settings_frame.setMaximumWidth(400)
-#window.settings_frame.parentWidget().layout().setColumnMaximumWidth(0, 400)
+sub_window.settings_frame.setMaximumWidth(400)
+#sub_window.settings_frame.parentWidget().layout().setColumnMaximumWidth(0, 400)
 
-#window.gridLayout_Main.setColumnStretch(0,1)
-#window.gridLayout_Main.setColumnStretch(1,4)
-window.setWindowTitle('Matrix Visualiser')
+#sub_window.gridLayout_Main.setColumnStretch(0,1)
+#sub_window.gridLayout_Main.setColumnStretch(1,4)
 
 # --- Button Connections ---
-window.visualiseButton.clicked.connect(visualise)
-window.addVectorButton.clicked.connect(add_vector)       # Action for adding rows
-window.removeVectorButton.clicked.connect(remove_vector) # Action for clearing rows
-window.show()
+sub_window.visualiseButton.clicked.connect(visualise)
+sub_window.addVectorButton.clicked.connect(add_vector)       # Action for adding rows
+sub_window.removeVectorButton.clicked.connect(remove_vector) # Action for clearing rows
 
-app.exec()
+app = QApplication.instance()
+
+if not app:
+    app = QApplication(sys.argv)
+    sub_window.setWindowTitle("Matrix Visualiser")
+    sub_window.show()
+
+    sys.exit(app.exec())
