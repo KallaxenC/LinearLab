@@ -3,8 +3,6 @@ from PySide6.QtCore import QFile, Qt, QUrl, QThread, Signal
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PySide6.QtMultimediaWidgets import QVideoWidget
-from TwoD_vector_animator import TwoDVectorTransformation, TwoDVectorTransformationWithCoordinates
-from manim import config
 from matrix_video_finder import find_matrix_video
 import os
 import sys
@@ -39,17 +37,17 @@ class VideoRenderer(QThread):
 
     def run(self):
         try:
-            config.preview = False
-            config.quality = self.video_quality
-            config.output_file = f"matrix_animation_{self.values}_{self.file_type}"
-
-            if self.file_type == "2D_vector_with_coords":
-                scene = TwoDVectorTransformationWithCoordinates(self.show_inverse, self.matrix, self.user_vectors)
-            else:
-                scene = TwoDVectorTransformation(self.show_inverse, self.matrix, self.user_vectors)
-
-            #scene.render() is what blocks all our stuff really
-            scene.render()
+            run_manim_worker(
+                {
+                    "kind": "2d_vector",
+                    "matrix": self.matrix,
+                    "show_inverse": bool(self.show_inverse),
+                    "show_coordinates": self.file_type == "2D_vector_with_coords",
+                    "vectors": self.user_vectors,
+                    "quality": self.video_quality,
+                    "output_file": f"matrix_animation_{self.values}_{self.file_type}",
+                }
+            )
 
             video_path = find_matrix_video(self.file_type, self.video_quality, self.values)
             self.render_finished.emit(video_path or "", self.open_video_seperately)
@@ -208,8 +206,8 @@ def visualise():
         return
 
     sub_window.progress_dialog = QProgressDialog("Generating Matrix Transformation Video...", None, 0, 0, sub_window)
-    sub_window.progress_dialog.setsub_windowTitle("Processing Request")
-    sub_window.progress_dialog.setsub_windowModality(Qt.sub_windowModality.sub_windowModal)
+    sub_window.progress_dialog.setWindowTitle("Processing Request")
+    sub_window.progress_dialog.setWindowModality(Qt.WindowModality.NonModal)
     #progress_dialog.setCancelButton(None)
     sub_window.progress_dialog.show()
 

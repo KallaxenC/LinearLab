@@ -12,8 +12,6 @@ from PySide6.QtCore import QFile, Qt, QUrl, QThread, Signal
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PySide6.QtMultimediaWidgets import QVideoWidget
-from ThreeD_vector_animator import ThreeDVectorTransformation, ThreeDVectorTransformationWithCoordinates
-from manim import config
 from matrix_video_finder import find_matrix_video
 from maths_syntaxer import interpretInput
 import os
@@ -44,19 +42,17 @@ class VideoRenderer(QThread):
 
     def run(self):
         try:
-            config.preview = False
-            config.quality = self.video_quality
-            config.output_file = f"matrix_animation_{self.values}_{self.file_type}"
-
-            if self.file_type == "3D_vector_with_coords":
-                scene = ThreeDVectorTransformationWithCoordinates(
-                    self.show_inverse, self.matrix, self.user_vectors
-                )
-            else:
-                scene = ThreeDVectorTransformation(
-                    self.show_inverse, self.matrix, self.user_vectors
-                )
-            scene.render()
+            run_manim_worker(
+                {
+                    "kind": "3d_vector",
+                    "matrix": self.matrix,
+                    "show_inverse": bool(self.show_inverse),
+                    "show_coordinates": self.file_type == "3D_vector_with_coords",
+                    "vectors": self.user_vectors,
+                    "quality": self.video_quality,
+                    "output_file": f"matrix_animation_{self.values}_{self.file_type}",
+                }
+            )
 
             video_path = find_matrix_video(
                 self.file_type, self.video_quality, self.values
@@ -220,8 +216,8 @@ def visualise():
     sub_window.progress_dialog = QProgressDialog(
         "Generating Matrix Transformation Video...", None, 0, 0, sub_window
     )
-    sub_window.progress_dialog.setsub_windowTitle("Processing Request")
-    sub_window.progress_dialog.setsub_windowModality(Qt.sub_windowModality.sub_windowModal)
+    sub_window.progress_dialog.setWindowTitle("Processing Request")
+    sub_window.progress_dialog.setWindowModality(Qt.WindowModality.NonModal)
     sub_window.progress_dialog.show()
 
     sub_window.render_thread = VideoRenderer(

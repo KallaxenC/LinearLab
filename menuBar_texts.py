@@ -1,0 +1,31 @@
+
+def functions_text():
+    functions_text = (
+        "Functions supported by the program:\n"
+        "\n"
+        "Trigonometric Functions:\n"
+        "(Note: Trig functions are always calculated in degrees)\n"
+        "\n"
+        "-> sin(x)\n"
+        "-> cos(x)\n"
+        "-> tan(x)\n"
+        "\n"
+        "Example valid inputs: cos(45), sin29 (brackets aren't required but recommended)\n"
+        "\n"
+        "Fractions:\n"
+        "\n"
+        "Typing the / symbol creates a fraction splitting the input up\n"
+        "\n"
+        "Example valid inputs: 1/2, cos(45)/2\n"
+        "\n"
+        "Square roots:\n"
+        "All of the following are valid inputs:\n"
+        "\n"
+        "-> sqrt(x)\n"
+        "-> sqrtx\n"
+        "-> root(x)\n"
+        "-> rootx\n"
+        "\n"
+        "Example valid inputs: root(2), sqrt25"
+    )
+    return functions_text
