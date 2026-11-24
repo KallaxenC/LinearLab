@@ -1,4 +1,7 @@
 # LinearLab
+
+<img width="720" height="405" alt="unit_square_example_1" src="https://github.com/user-attachments/assets/e1675016-60b6-4f3f-89aa-1f485b1fa99f" />
+
 Helping Visualise Linear Transformations
 Simply enter a matrix and your required point and watch the transformation video the software generates.
 
