@@ -1,4 +1,5 @@
 from pathlib import Path
+from resources import linear_lab_videos_path
 
 def find_matrix_video(file_type,quality,values):
     if quality == "low_quality":
@@ -10,11 +11,12 @@ def find_matrix_video(file_type,quality,values):
 
     expected_filename = f"matrix_animation_{values}_{file_type}.mp4"
 
-    script_dir = Path(__file__).resolve().parent
+    video_file_path = linear_lab_videos_path(
+        quality_folder,
+        expected_filename,
+    )
 
-    video_file_path = script_dir / "media" / "videos" / quality_folder / expected_filename
-
-    if video_file_path.exists():
+    if video_file_path.is_file():
         return str(video_file_path)
     else:
         return None

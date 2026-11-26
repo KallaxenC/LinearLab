@@ -12,6 +12,7 @@
   </property>
   <property name="font">
    <font>
+    <family>Segoe UI</family>
     <pointsize>10</pointsize>
    </font>
   </property>
@@ -95,31 +96,85 @@
        <item row="1" column="0">
         <layout class="QGridLayout" name="gridLayout">
          <item row="2" column="0">
-          <widget class="QLineEdit" name="g_value"/>
+          <widget class="QLineEdit" name="g_value">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QLineEdit" name="a_value"/>
+          <widget class="QLineEdit" name="a_value">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="0" column="2">
-          <widget class="QLineEdit" name="c_value"/>
+          <widget class="QLineEdit" name="c_value">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QLineEdit" name="h_value"/>
+          <widget class="QLineEdit" name="h_value">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QLineEdit" name="d_value"/>
+          <widget class="QLineEdit" name="d_value">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QLineEdit" name="f_value"/>
+          <widget class="QLineEdit" name="f_value">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="b_value"/>
+          <widget class="QLineEdit" name="b_value">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="2" column="2">
-          <widget class="QLineEdit" name="i_value"/>
+          <widget class="QLineEdit" name="i_value">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="e_value"/>
+          <widget class="QLineEdit" name="e_value">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -149,8 +204,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>626</width>
-            <height>464</height>
+            <width>606</width>
+            <height>407</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">

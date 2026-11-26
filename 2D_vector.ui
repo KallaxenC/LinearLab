@@ -38,7 +38,7 @@
             <x>0</x>
             <y>0</y>
             <width>481</width>
-            <height>339</height>
+            <height>329</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -221,7 +221,8 @@
           <widget class="QLineEdit" name="a_value">
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="alignment">
@@ -233,7 +234,8 @@
           <widget class="QLineEdit" name="d_value">
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="alignment">
@@ -245,7 +247,8 @@
           <widget class="QLineEdit" name="b_value">
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="alignment">
@@ -257,7 +260,8 @@
           <widget class="QLineEdit" name="c_value">
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="text">

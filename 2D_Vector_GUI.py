@@ -7,7 +7,7 @@ from matrix_video_finder import find_matrix_video
 import os
 import sys
 from maths_syntaxer import interpretInput
-
+from resources import resource_path
 #Classes go below here
 
 #I seperate the rendering process into a seperate 'Thread' to allow the sub_window to remain responsive whilst all the rendering stuff happens
@@ -240,7 +240,7 @@ def on_render_error(error_msg):
 
 
 loader = QUiLoader()
-file = QFile('2D_vector.ui')
+file = QFile(str(resource_path('2D_vector.ui')))
 file.open(QFile.ReadOnly)
 sub_window = loader.load(file)
 file.close()

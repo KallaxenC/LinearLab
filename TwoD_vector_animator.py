@@ -174,8 +174,8 @@ class TwoDVectorTransformation(CameraAwareLinearTransformationScene):
             "x_range": [-grid_bound*1.5, grid_bound*1.5, 1],
             "y_range": [-grid_bound, grid_bound, 1],
             "background_line_style": {
-                "stroke_color": GRAY_E,
-                "stroke_width": 1,
+                #"stroke_color": GRAY_E,
+                #"stroke_width": 1,
                 "stroke_opacity": 0.5,
             },
             "axis_config": {"stroke_color": GRAY_D, "stroke_width": 2},

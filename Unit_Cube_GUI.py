@@ -13,6 +13,7 @@ from matrix_video_finder import find_matrix_video
 from maths_syntaxer import interpretInput
 import os
 import sys
+from resources import resource_path
 
 class VideoRenderer(QThread):
     render_finished = Signal(str, bool)
@@ -183,7 +184,7 @@ def on_render_error(error_message):
 
 loader = QUiLoader()
 
-file = QFile('unit_cube.ui')
+file = QFile(str(resource_path('unit_cube.ui')))
 file.open(QFile.ReadOnly)
 sub_window = loader.load(file)
 file.close()
